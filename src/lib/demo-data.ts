@@ -21,6 +21,7 @@ export interface DemoAdminData {
     profile: FinancialProfile;
     goal: Goal;
     latestScore: ScoreSnapshot;
+    scoreSnapshots: ScoreSnapshot[];
     recommendations: Recommendation[];
   }>;
 }
@@ -280,6 +281,7 @@ export const DEMO_ADMIN_DATA: DemoAdminData = {
       profile: PROFILE_1,
       goal: GOAL_1,
       latestScore: SCORES_1[SCORES_1.length - 1],
+      scoreSnapshots: SCORES_1,
       recommendations: RECS_1,
     },
     {
@@ -287,6 +289,7 @@ export const DEMO_ADMIN_DATA: DemoAdminData = {
       profile: PROFILE_2,
       goal: GOAL_2,
       latestScore: SCORES_2[SCORES_2.length - 1],
+      scoreSnapshots: SCORES_2,
       recommendations: RECS_2,
     },
     {
@@ -294,6 +297,7 @@ export const DEMO_ADMIN_DATA: DemoAdminData = {
       profile: PROFILE_3,
       goal: GOAL_3,
       latestScore: SCORES_3[SCORES_3.length - 1],
+      scoreSnapshots: SCORES_3,
       recommendations: [],
     },
   ],

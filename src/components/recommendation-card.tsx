@@ -18,6 +18,7 @@ interface RecommendationCardProps {
   completedAt: string | null;
   aiGenerated?: boolean | null;
   compact?: boolean;
+  hideBadge?: boolean;
 }
 
 const STATUS_CONFIG: Record<
@@ -55,6 +56,7 @@ export function RecommendationCard({
   completedAt,
   aiGenerated,
   compact,
+  hideBadge,
 }: RecommendationCardProps) {
   const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.draft;
   const typedActions = actions as Action[];
@@ -66,12 +68,14 @@ export function RecommendationCard({
           <CardTitle className="text-sm font-medium leading-snug">
             {summary}
           </CardTitle>
-          <Badge
-            variant={config.variant}
-            className={cn("shrink-0", config.className)}
-          >
-            {config.label}
-          </Badge>
+          {!hideBadge && (
+            <Badge
+              variant={config.variant}
+              className={cn("shrink-0", config.className)}
+            >
+              {config.label}
+            </Badge>
+          )}
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {aiGenerated && (

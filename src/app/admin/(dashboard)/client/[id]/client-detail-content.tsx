@@ -1,16 +1,32 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { MetricCard } from "@/components/metric-card";
 import { ScoreRing } from "@/components/score-ring";
 import { ScoreChart } from "@/components/score-chart";
 import { RecommendationCard } from "@/components/recommendation-card";
+import { RecommendSheet } from "./recommend-sheet";
 import { DEMO_ADMIN_DATA } from "@/lib/demo-data";
 import { getScoreColor, getScoreLabel } from "@/lib/score";
-import { DollarSign, TrendingDown, Landmark, PiggyBank, ArrowLeft } from "lucide-react";
+import { DollarSign, TrendingDown, Landmark, PiggyBank, ArrowLeft, Pencil, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/lib/supabase/types";
 
@@ -42,6 +58,9 @@ export function ClientDetailContent({
   snapshots: realSnapshots,
   recommendations: realRecs,
 }: Props) {
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [viewingRec, setViewingRec] = useState<Tables<"recommendations"> | null>(null);
+
   const demoClient = isDemoMode
     ? DEMO_ADMIN_DATA.clients.find((c) => c.user.id === clientId)
     : null;
@@ -68,6 +87,8 @@ export function ClientDetailContent({
   const breakdown = latestScore?.breakdown as Record<string, number> | null;
   const hasProfile = profile && (profile.monthly_income ?? 0) > 0;
 
+  const draft = recommendations.find((r) => r.status === "draft") ?? null;
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
@@ -90,9 +111,9 @@ export function ClientDetailContent({
           </div>
           <p className="text-sm text-muted-foreground">{client?.email}</p>
         </div>
-        <Link href={`/admin/client/${clientId}/recommend`}>
-          <Button>Generate Recommendations</Button>
-        </Link>
+        <Button onClick={() => setSheetOpen(true)}>
+          Generate Recommendations
+        </Button>
       </div>
 
       {!hasProfile ? (
@@ -224,23 +245,108 @@ export function ClientDetailContent({
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-3">
-            {recommendations.map((rec) => (
-              <RecommendationCard
-                key={rec.id}
-                summary={rec.summary}
-                actions={rec.actions as { action: string; priority: "high" | "medium" | "low"; rationale: string }[]}
-                status={rec.status}
-                createdAt={rec.created_at}
-                sentAt={rec.sent_at}
-                acknowledgedAt={rec.acknowledged_at}
-                completedAt={rec.completed_at}
-                aiGenerated={rec.ai_generated}
-              />
-            ))}
-          </div>
+          <Card>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Description</TableHead>
+                  <TableHead className="w-[120px]">Status</TableHead>
+                  <TableHead className="w-[120px]">Last Sent</TableHead>
+                  <TableHead className="w-[100px] text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recommendations.map((rec) => (
+                  <TableRow key={rec.id}>
+                    <TableCell>
+                      <p className="text-sm whitespace-normal">{rec.summary}</p>
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={rec.status} />
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {rec.sent_at
+                        ? new Date(rec.sent_at).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : "—"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {rec.status === "draft" ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSheetOpen(true)}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Edit
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setViewingRec(rec)}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          View
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
         )}
       </div>
+
+      <Dialog
+        open={!!viewingRec}
+        onOpenChange={(open) => !open && setViewingRec(null)}
+      >
+        <DialogContent className="w-[50vw] sm:max-w-none max-h-[85vh] overflow-y-auto">
+          {viewingRec && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  Recommendation
+                  <StatusBadge status={viewingRec.status} />
+                </DialogTitle>
+              </DialogHeader>
+              <RecommendationCard
+                summary={viewingRec.summary}
+                actions={
+                  viewingRec.actions as {
+                    action: string;
+                    priority: "high" | "medium" | "low";
+                    rationale: string;
+                  }[]
+                }
+                status={viewingRec.status}
+                createdAt={viewingRec.created_at}
+                sentAt={viewingRec.sent_at}
+                acknowledgedAt={viewingRec.acknowledged_at}
+                completedAt={viewingRec.completed_at}
+                aiGenerated={viewingRec.ai_generated}
+                hideBadge
+              />
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <RecommendSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        isDemoMode={isDemoMode}
+        clientId={clientId}
+        clientName={client?.name}
+        score={score}
+        hasProfile={!!hasProfile}
+        draft={draft}
+      />
     </div>
   );
 }
@@ -267,3 +373,21 @@ function BreakdownRow({
   );
 }
 
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "outline" | "destructive"; className?: string }
+> = {
+  draft: { label: "Draft", variant: "outline", className: "border-muted-foreground/40" },
+  sent: { label: "Sent", variant: "default", className: "bg-blue-500 hover:bg-blue-500" },
+  acknowledged: { label: "Acknowledged", variant: "default", className: "bg-amber-500 hover:bg-amber-500" },
+  done: { label: "Completed", variant: "default", className: "bg-emerald-500 hover:bg-emerald-500" },
+};
+
+function StatusBadge({ status }: { status: string }) {
+  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.draft;
+  return (
+    <Badge variant={config.variant} className={config.className}>
+      {config.label}
+    </Badge>
+  );
+}

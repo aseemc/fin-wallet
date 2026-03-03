@@ -73,13 +73,20 @@ export async function signIn(formData: FormData) {
     return { error: "Email and password are required" };
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
     return { error: error.message };
+  }
+
+  const userRole = data.user?.user_metadata?.role as string | undefined;
+  if (userRole !== role) {
+    await supabase.auth.signOut();
+    const expected = role === "advisor" ? "advisor" : "client";
+    return { error: `This account is not registered as an ${expected}. Please use the correct login page.` };
   }
 
   redirect(role === "advisor" ? "/admin" : "/");

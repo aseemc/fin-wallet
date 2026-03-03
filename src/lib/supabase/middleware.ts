@@ -68,5 +68,6 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
+  supabaseResponse.headers.set("Cache-Control", "no-store, max-age=0");
   return supabaseResponse;
 }

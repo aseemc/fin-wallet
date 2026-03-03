@@ -1,20 +1,49 @@
 import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
+import { ClientDashboardContent } from "./dashboard-content";
 
 export default async function ClientDashboard() {
+  const cookieStore = await cookies();
+  const isDemoMode = cookieStore.get("demo_mode")?.value === "client";
+
+  if (isDemoMode) {
+    return <ClientDashboardContent isDemoMode />;
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) return null;
+
+  const [profileRes, goalRes, snapshotsRes] = await Promise.all([
+    supabase
+      .from("financial_profiles")
+      .select("*")
+      .eq("user_id", user.id)
+      .single(),
+    supabase
+      .from("goals")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single(),
+    supabase
+      .from("score_snapshots")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true }),
+  ]);
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">Financial Health Dashboard</h1>
-      <p className="text-muted-foreground mt-1">
-        Welcome back, {user?.user_metadata?.name ?? "there"}
-      </p>
-      <p className="mt-4 text-sm text-muted-foreground">
-        Dashboard will be built in Milestone 2.
-      </p>
-    </div>
+    <ClientDashboardContent
+      isDemoMode={false}
+      userName={user.user_metadata?.name}
+      profile={profileRes.data}
+      goal={goalRes.data}
+      snapshots={snapshotsRes.data ?? []}
+    />
   );
 }

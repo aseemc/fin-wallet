@@ -11,10 +11,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { useDemoMode } from "@/providers/demo-provider";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 import { useActionState } from "react";
 
 export default function ClientLoginPage() {
+  const { enterClientDemo } = useDemoMode();
+
   const [state, formAction, isPending] = useActionState(
     async (_prev: { error: string } | null, formData: FormData) => {
       formData.append("role", "client");
@@ -25,7 +30,7 @@ export default function ClientLoginPage() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
@@ -62,6 +67,22 @@ export default function ClientLoginPage() {
               {isPending ? "Signing in..." : "Sign In"}
             </Button>
           </form>
+
+          <div className="my-4 flex items-center gap-3">
+            <Separator className="flex-1" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <Separator className="flex-1" />
+          </div>
+
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={enterClientDemo}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            Try Client Demo
+          </Button>
+
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link href="/signup" className="text-primary underline">

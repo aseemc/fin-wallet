@@ -11,10 +11,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { useDemoMode } from "@/providers/demo-provider";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 import { useActionState } from "react";
 
 export default function AdvisorLoginPage() {
+  const { enterAdminDemo } = useDemoMode();
+
   const [state, formAction, isPending] = useActionState(
     async (_prev: { error: string } | null, formData: FormData) => {
       formData.append("role", "advisor");
@@ -25,7 +30,7 @@ export default function AdvisorLoginPage() {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-200 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-900 dark:to-slate-800 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Advisor Console</CardTitle>
@@ -62,6 +67,22 @@ export default function AdvisorLoginPage() {
               {isPending ? "Signing in..." : "Sign In"}
             </Button>
           </form>
+
+          <div className="my-4 flex items-center gap-3">
+            <Separator className="flex-1" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <Separator className="flex-1" />
+          </div>
+
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={enterAdminDemo}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            Try Advisor Demo
+          </Button>
+
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Don&apos;t have an advisor account?{" "}
             <Link href="/admin/signup" className="text-primary underline">

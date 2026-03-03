@@ -25,10 +25,6 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   const { pathname } = request.nextUrl;
 
   const isAuthPage =
@@ -36,6 +32,31 @@ export async function updateSession(request: NextRequest) {
     pathname === "/signup" ||
     pathname === "/admin/login" ||
     pathname === "/admin/signup";
+
+  const demoMode = request.cookies.get("demo_mode")?.value;
+  if (demoMode === "client" || demoMode === "advisor") {
+    if (isAuthPage) {
+      const redirectTo =
+        demoMode === "advisor"
+          ? new URL("/admin", request.url)
+          : new URL("/", request.url);
+      return NextResponse.redirect(redirectTo);
+    }
+
+    const isAdminRoute = pathname.startsWith("/admin");
+    if (demoMode === "advisor" && !isAdminRoute) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+    if (demoMode === "client" && isAdminRoute) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    return supabaseResponse;
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (isAuthPage) {
     if (user) {

@@ -1,5 +1,6 @@
-import { signOut } from "@/actions/auth";
-import { Button } from "@/components/ui/button";
+import { DemoBanner } from "@/components/demo-banner";
+import { SignOutButton } from "@/components/sign-out-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 
 export default function ClientLayout({
@@ -9,20 +10,20 @@ export default function ClientLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <header className="border-b bg-white sticky top-0 z-10">
+      <DemoBanner />
+      <header className="border-b bg-background sticky top-0 z-10">
         <div className="max-w-lg mx-auto flex items-center justify-between px-4 h-14">
           <Link href="/" className="font-bold text-lg">
             FinWallet
           </Link>
-          <form action={signOut}>
-            <Button variant="ghost" size="sm" type="submit">
-              Sign out
-            </Button>
-          </form>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <SignOutButton />
+          </div>
         </div>
       </header>
       <main className="flex-1 max-w-lg mx-auto w-full">{children}</main>
-      <nav className="border-t bg-white sticky bottom-0 z-10">
+      <nav className="border-t bg-background sticky bottom-0 z-10">
         <div className="max-w-lg mx-auto flex justify-around py-2">
           <Link
             href="/"

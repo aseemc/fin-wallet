@@ -1,5 +1,6 @@
-import { signOut } from "@/actions/auth";
-import { Button } from "@/components/ui/button";
+import { DemoBanner } from "@/components/demo-banner";
+import { SignOutButton } from "@/components/sign-out-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 
 export default function AdvisorLayout({
@@ -8,12 +9,17 @@ export default function AdvisorLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex bg-background">
-      <aside className="w-64 border-r bg-white flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
+      <DemoBanner />
+      <div className="flex flex-1">
+      <aside className="w-64 border-r bg-background flex flex-col">
         <div className="p-6 border-b">
-          <Link href="/admin" className="font-bold text-lg">
-            FinWallet
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link href="/admin" className="font-bold text-lg">
+              FinWallet
+            </Link>
+            <ThemeToggle />
+          </div>
           <p className="text-xs text-muted-foreground mt-1">Advisor Console</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
@@ -26,14 +32,11 @@ export default function AdvisorLayout({
           </Link>
         </nav>
         <div className="p-4 border-t">
-          <form action={signOut}>
-            <Button variant="ghost" size="sm" className="w-full" type="submit">
-              Sign out
-            </Button>
-          </form>
+          <SignOutButton className="w-full" />
         </div>
       </aside>
       <main className="flex-1 p-8">{children}</main>
+      </div>
     </div>
   );
 }

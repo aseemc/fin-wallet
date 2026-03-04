@@ -1,6 +1,6 @@
 import { DemoBanner } from "@/components/demo-banner";
+import { MobileAdminNav } from "@/components/mobile-admin-nav";
 import { SignOutButton } from "@/components/sign-out-button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 
 export default function AdvisorLayout({
@@ -9,33 +9,44 @@ export default function AdvisorLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
       <DemoBanner />
-      <div className="flex flex-1">
-      <aside className="w-64 border-r bg-background flex flex-col">
-        <div className="p-6 border-b">
-          <div className="flex items-center justify-between">
+
+      {/* Mobile header - visible on small screens */}
+      <header className="md:hidden border-b bg-background sticky top-0 z-10">
+        <div className="flex items-center justify-between px-4 h-14">
+          <div className="flex items-center gap-2">
+            <MobileAdminNav />
             <Link href="/admin" className="font-bold text-lg">
               FinWallet
             </Link>
-            <ThemeToggle />
           </div>
-          <p className="text-xs text-muted-foreground mt-1">Advisor Console</p>
+          <div className="flex items-center gap-1">
+            <SignOutButton />
+          </div>
         </div>
-        <nav className="flex-1 p-4 space-y-1">
-          <Link
-            href="/admin"
-            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-muted"
-          >
-            <UsersIcon />
-            Clients
-          </Link>
-        </nav>
-        <div className="p-4 border-t">
-          <SignOutButton className="w-full" />
-        </div>
-      </aside>
-      <main className="flex-1 p-8">{children}</main>
+      </header>
+
+      <div className="flex flex-1 min-h-0">
+        {/* Desktop sidebar - hidden on mobile */}
+        <aside className="hidden md:flex w-64 border-r bg-background flex-col shrink-0">
+          <div className="p-6">
+            <Link href="/admin" className="font-bold text-lg">
+              FinWallet
+            </Link>
+            <p className="text-xs text-muted-foreground mt-1">Advisor Console</p>
+          </div>
+          <nav className="flex-1 p-4 space-y-1">
+            <Link
+              href="/admin"
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-muted"
+            >
+              <UsersIcon />
+              Clients
+            </Link>
+          </nav>
+        </aside>
+        <main className="flex-1 min-w-0 overflow-y-auto">{children}</main>
       </div>
     </div>
   );

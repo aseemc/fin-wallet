@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AdminContentHeader } from "@/components/admin-content-header";
 import { DEMO_ADMIN_DATA } from "@/lib/demo-data";
 import { getScoreColor, getScoreLabel } from "@/lib/score";
 
@@ -55,15 +56,16 @@ export function ClientListContent({
   const name = isDemoMode ? DEMO_ADMIN_DATA.advisor.name : advisorName;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Clients</h1>
+    <div>
+      <AdminContentHeader>
+        <h1 className="text-xl font-bold">Clients</h1>
         <p className="text-sm text-muted-foreground">
           Welcome back, {name ?? "Advisor"}
         </p>
-      </div>
+      </AdminContentHeader>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="px-4 pb-4 md:px-8 md:pb-8 space-y-6 mt-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
             <p className="text-2xl font-bold">{clients.length}</p>
@@ -103,7 +105,7 @@ export function ClientListContent({
           <CardHeader>
             <CardTitle className="text-base">All Clients</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -162,6 +164,7 @@ export function ClientListContent({
           </CardContent>
         </Card>
       )}
+      </div>
     </div>
   );
 }

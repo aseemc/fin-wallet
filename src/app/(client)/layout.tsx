@@ -1,6 +1,7 @@
 import { DemoBanner } from "@/components/demo-banner";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { WalletSwitcher } from "@/components/wallet-switcher";
 import Link from "next/link";
 
 export default function ClientLayout({
@@ -13,9 +14,7 @@ export default function ClientLayout({
       <DemoBanner />
       <header className="border-b bg-background sticky top-0 z-10">
         <div className="max-w-lg mx-auto flex items-center justify-between px-4 h-14">
-          <Link href="/" className="font-bold text-lg">
-            FinWallet
-          </Link>
+          <WalletSwitcher />
           <div className="flex items-center gap-1">
             <ThemeToggle />
             <SignOutButton />

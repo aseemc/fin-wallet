@@ -40,6 +40,16 @@ Reduces advisor time-to-first-recommendation from manual analysis to a single cl
 
 ## AI in Development
 
-- Used Cursor IDE with Claude for: architecture planning, boilerplate scaffolding, component generation, prompt engineering, and debugging
-- All generated code was reviewed, understood, and adapted to project conventions before inclusion
-- AI assisted with: Supabase schema design, middleware auth logic, demo mode architecture, score computation, and documentation drafting
+### Process
+I used Cursor (with Claude model) throughout development, but my time was weighted toward product decisions, not code generation:
+
+1. **Product ideation & scoping** — brainstormed the dual-summary concept, multi-vertical architecture, and demo mode strategy using AI as a sounding board; made all final product calls myself
+2. **Milestone planning** — broke the build into incremental milestones (scaffolding → client view → admin view → AI recommendations → demo mode) and built sequentially
+3. **Implementation** — for each milestone, I defined the requirements and architecture, then used Cursor's agent mode to generate implementation. Every file was reviewed before committing — I caught and corrected issues with score computation logic, middleware auth flow, and prompt design
+4. **Prompt engineering** — the dual-summary prompt and Zod validation were iterated manually; AI drafted the structure, I tuned tone, temperature, and schema constraints
+
+### What AI accelerated
+Boilerplate scaffolding, component markup, Supabase schema setup, middleware patterns, documentation drafting
+
+### What I owned
+Product direction, UX decisions, architecture trade-offs (cookie-based demo mode, multi-vertical with one enabled, single vs multi agent use), code review, and prompt tuning

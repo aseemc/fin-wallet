@@ -44,6 +44,7 @@ For quick evaluation without signing up:
 ## Features
 
 ### Client (mobile-web, touch-friendly)
+- Wallet switcher in header — Finance Wallet active, Health/Tax/Legal shown as "Coming Soon"
 - Financial Health Score (0–100) with color-coded display and transparent breakdown
 - Score trend chart tracking progress over time
 - Financial data entry (income, expenses, debt, savings) with auto score recomputation
@@ -52,6 +53,8 @@ For quick evaluation without signing up:
 - Light/dark mode toggle
 
 ### Advisor (desktop-optimized)
+- Vertical selection on first login (Finance enabled; Health, Tax, Legal coming soon)
+- Dynamic branding — sidebar and header reflect the selected vertical ("Finance Wallet", "Health Wallet", etc.)
 - Client list with health scores and status
 - Client detail view: financial snapshot, score breakdown, goal progress, score trend
 - AI-powered recommendation generation (GPT-4o-mini)
@@ -64,6 +67,14 @@ For quick evaluation without signing up:
 - Structured JSON output validated with Zod
 - Advisor reviews and edits both summaries before sending
 - Client only sees the encouraging, jargon-free message
+
+## Why This Design (Based on personal experience)
+
+The core insight is that financial health is a **motivation problem**, not just a data problem. Clients — especially young professionals — don't need another spreadsheet; they need a score they can watch improve, goals that feel achievable, and guidance written in encouraging language rather than jargon.
+
+The dual client/advisor model exists because AI alone isn't trustworthy enough for financial advice. Advisors provide the judgment layer: they review AI-generated recommendations, edit for context, and control when clients see them. This keeps the human in the loop while cutting per-client drafting time from ~30 minutes to under 2.
+
+The client experience is mobile-first (web based for MVP) because that's where people check their finances. The advisor experience is desktop-optimized because that's where professionals work through a client list. Demo mode with realistic seed data lets evaluators experience both flows without signup friction.
 
 ## Tech Stack
 
@@ -78,21 +89,17 @@ For quick evaluation without signing up:
 | Theme | next-themes (system/light/dark) |
 | Validation | Zod |
 
-## Why Supabase?
+This stack prioritizes developer velocity — I've shipped with this combination before and can move quickly without fighting tooling. Supabase in particular gives me Postgres, auth, and type generation out of the box, so I can focus on product logic instead of infrastructure.
 
-- **Relational data model** — FK constraints fit the financial profiles → scores → recommendations graph
-- **JSONB columns** — flexible structured data for score breakdowns and action items
-- **Built-in Auth** — session management via `@supabase/ssr` with zero extra infrastructure
-- **Type generation** — end-to-end type safety from DB schema to React components
-- **RLS-ready** — current auth is app-level middleware, but the table structure supports row-level security policies when needed
+## Key Tradeoffs
 
-## Architecture Decisions
-
-- **Server Components for reads, Server Actions for writes** — minimal client JS, fast initial loads
-- **Score computed on write** — profile/goal updates trigger `computeAndStoreScore()`, stored as snapshots for trend tracking
-- **Middleware-based auth** — session + role checks in Next.js middleware; demo mode via cookie bypass
-- **Optimistic UI** — recommendation status actions use `useOptimistic` + `useTransition` for instant feedback
-- **AI guardrails** — JSON mode, Zod validation, 0.3 temperature, mandatory advisor review before sending
+- **Server Components for reads, Server Actions for writes** — prioritized fast initial loads and minimal client JS over rich client-side interactivity; forms that need instant feedback use `useOptimistic` selectively
+- **Score computed on write, not on read** — trades slightly slower profile/goal updates for instant score display and simple trend tracking via stored snapshots
+- **App-level auth (middleware) instead of Row-Level Security** — faster to ship and easier to debug, at the cost of defense-in-depth; table structure is RLS-ready for hardening later
+- **Single AI call with mandatory advisor review** — slower delivery to clients, but ensures accuracy and builds trust; avoids the risk of unreviewed AI advice reaching users
+- **Structured AI output (JSON mode + Zod) at low temperature** — trades creative variation for predictable, parseable output the UI can reliably render
+- **Demo mode via cookie bypass** — enables frictionless evaluation but required a parallel code path for seeded data that adds maintenance surface
+- **Multi-vertical architecture built early** — `vertical` column, dynamic branding, and vertical selector add complexity now, but avoid a painful refactor when Health/Tax/Legal wallets ship
 
 ## Project Structure
 
@@ -114,11 +121,18 @@ src/
 └── providers/               # React context (demo mode, React Query)
 ```
 
-## What I'd Build Next
+## What I'd Do with More Time
+
+Engineering hardening, infrastructure, and features I'd build to move this from prototype to production.
 
 1. **Row-Level Security** — table structure already supports RLS; enable policies for defense-in-depth
 2. **Multi-goal support** — allow clients to track multiple financial goals simultaneously
-3. **Advisor-client assignment** — proper access control with multi-advisor model
-4. **Score trend sparklines** — inline charts on the advisor client list for quick triage
-5. **Push notifications** — alert clients when new recommendations arrive
-6. **Unit/integration tests** — Jest + React Testing Library for critical flows
+3. **Push notifications** — alert clients when new recommendations arrive
+4. **Unit/integration tests** — Jest + React Testing Library for critical flows
+5. **Error tracking** — Sentry integration for real-time error monitoring and alerting
+6. **User analytics** — Amplitude or Vercel Analytics for usage insights and funnel optimization
+7. **Database indexing** — add composite indexes on high-traffic queries as the user base scales
+8. **Quick Connect with advisor** — in-app scheduling or live chat for clients to reach their advisor directly
+9. **Richer AI context** — feed past recommendations, their statuses, individual action item progress, and financial data history into the prompt for more personalized, context-aware recommendations
+10. **Iterative product development** — user interviews, competitive analysis, and usage data to prioritize features that drive real engagement
+11. **Enable remaining verticals** — Health, Tax, and Legal wallets with vertical-specific score algorithms and AI prompts

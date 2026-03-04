@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 
-export function MobileAdminNav() {
+export function MobileAdminNav({ walletLabel = "Finance Wallet" }: { walletLabel?: string }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -23,7 +23,8 @@ export function MobileAdminNav() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" className="w-64">
           <SheetHeader>
-            <SheetTitle>Advisor Console</SheetTitle>
+            <SheetTitle>{walletLabel}</SheetTitle>
+            <p className="text-xs text-muted-foreground">Advisor Console</p>
           </SheetHeader>
           <nav className="mt-4 space-y-1">
             <Link

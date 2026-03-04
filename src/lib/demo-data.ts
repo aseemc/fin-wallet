@@ -31,6 +31,7 @@ const DEMO_ADVISOR: User = {
   name: "Sarah Mitchell",
   email: "sarah@advisor.demo",
   role: "advisor",
+  vertical: "finance",
   created_at: "2025-11-01T00:00:00Z",
 };
 
@@ -39,6 +40,7 @@ const DEMO_CLIENT_1: User = {
   name: "Alex Chen",
   email: "alex@client.demo",
   role: "client",
+  vertical: null,
   created_at: "2025-12-01T00:00:00Z",
 };
 
@@ -47,6 +49,7 @@ const DEMO_CLIENT_2: User = {
   name: "Jordan Rivera",
   email: "jordan@client.demo",
   role: "client",
+  vertical: null,
   created_at: "2026-01-10T00:00:00Z",
 };
 
@@ -55,6 +58,7 @@ const DEMO_CLIENT_3: User = {
   name: "Priya Patel",
   email: "priya@client.demo",
   role: "client",
+  vertical: null,
   created_at: "2026-02-05T00:00:00Z",
 };
 

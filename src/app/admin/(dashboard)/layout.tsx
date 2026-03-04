@@ -1,13 +1,41 @@
 import { DemoBanner } from "@/components/demo-banner";
 import { MobileAdminNav } from "@/components/mobile-admin-nav";
 import { SignOutButton } from "@/components/sign-out-button";
+import { VERTICAL_LABELS, type Vertical } from "@/lib/verticals";
+import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 import Link from "next/link";
 
-export default function AdvisorLayout({
+async function getWalletLabel(): Promise<string> {
+  const cookieStore = await cookies();
+  const isDemoMode = cookieStore.get("demo_mode")?.value === "advisor";
+
+  if (isDemoMode) return VERTICAL_LABELS.finance;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return VERTICAL_LABELS.finance;
+
+  const { data } = await supabase
+    .from("users")
+    .select("vertical")
+    .eq("id", user.id)
+    .single();
+
+  const vertical = (data?.vertical as Vertical) ?? "finance";
+  return VERTICAL_LABELS[vertical] ?? VERTICAL_LABELS.finance;
+}
+
+export default async function AdvisorLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const walletLabel = await getWalletLabel();
+
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background">
       <DemoBanner />
@@ -16,9 +44,9 @@ export default function AdvisorLayout({
       <header className="md:hidden border-b bg-background sticky top-0 z-10">
         <div className="flex items-center justify-between px-4 h-14">
           <div className="flex items-center gap-2">
-            <MobileAdminNav />
+            <MobileAdminNav walletLabel={walletLabel} />
             <Link href="/admin" className="font-bold text-lg">
-              FinWallet
+              {walletLabel}
             </Link>
           </div>
           <div className="flex items-center gap-1">
@@ -32,7 +60,7 @@ export default function AdvisorLayout({
         <aside className="hidden md:flex w-64 border-r bg-background flex-col shrink-0">
           <div className="p-6">
             <Link href="/admin" className="font-bold text-lg">
-              FinWallet
+              {walletLabel}
             </Link>
             <p className="text-xs text-muted-foreground mt-1">Advisor Console</p>
           </div>

@@ -89,6 +89,24 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
+  if (
+    role === "advisor" &&
+    isAdminRoute &&
+    pathname !== "/admin/select-vertical"
+  ) {
+    const { data: userData } = await supabase
+      .from("users")
+      .select("vertical")
+      .eq("id", user.id)
+      .single();
+
+    if (!userData?.vertical) {
+      return NextResponse.redirect(
+        new URL("/admin/select-vertical", request.url)
+      );
+    }
+  }
+
   supabaseResponse.headers.set("Cache-Control", "no-store, max-age=0");
   return supabaseResponse;
 }

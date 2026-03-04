@@ -97,7 +97,6 @@ This stack prioritizes developer velocity — I've shipped with this combination
 - **Score computed on write, not on read** — trades slightly slower profile/goal updates for instant score display and simple trend tracking via stored snapshots
 - **App-level auth (middleware) instead of Row-Level Security** — faster to ship and easier to debug, at the cost of defense-in-depth; table structure is RLS-ready for hardening later
 - **Single AI call with mandatory advisor review** — slower delivery to clients, but ensures accuracy and builds trust; avoids the risk of unreviewed AI advice reaching users
-- **Structured AI output (JSON mode + Zod) at low temperature** — trades creative variation for predictable, parseable output the UI can reliably render
 - **Demo mode via cookie bypass** — enables frictionless evaluation but required a parallel code path for seeded data that adds maintenance surface
 - **Multi-vertical architecture built early** — `vertical` column, dynamic branding, and vertical selector add complexity now, but avoid a painful refactor when Health/Tax/Legal wallets ship
 

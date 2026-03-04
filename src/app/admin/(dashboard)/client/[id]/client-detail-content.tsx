@@ -26,6 +26,7 @@ import { RecommendationCard } from "@/components/recommendation-card";
 import { RecommendSheet } from "./recommend-sheet";
 import { DEMO_ADMIN_DATA } from "@/lib/demo-data";
 import { getScoreColor, getScoreLabel } from "@/lib/score";
+import { AdminContentHeader } from "@/components/admin-content-header";
 import { DollarSign, TrendingDown, Landmark, PiggyBank, ArrowLeft, Pencil, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Tables } from "@/lib/supabase/types";
@@ -88,34 +89,37 @@ export function ClientDetailContent({
   const hasProfile = profile && (profile.monthly_income ?? 0) > 0;
 
   const draft = recommendations.find((r) => r.status === "draft") ?? null;
+  const hasIncomplete = recommendations.some(
+    (r) => r.status !== "completed" && r.status !== "draft"
+  );
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center gap-4">
-        <Link href="/admin">
-          <Button variant="ghost" size="icon" className="shrink-0">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">{client?.name}</h1>
-            {latestScore && (
-              <Badge
-                variant="secondary"
-                className={getScoreColor(score)}
-              >
-                Score: {score} · {getScoreLabel(score)}
-              </Badge>
-            )}
+    <div>
+      <AdminContentHeader>
+        <div className="flex items-center gap-3 min-w-0">
+          <Link href="/admin">
+            <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div className="min-w-0">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-xl font-bold truncate">{client?.name}</h1>
+              {latestScore && (
+                <Badge
+                  variant="secondary"
+                  className={getScoreColor(score)}
+                >
+                  Score: {score} · {getScoreLabel(score)}
+                </Badge>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground truncate">{client?.email}</p>
           </div>
-          <p className="text-sm text-muted-foreground">{client?.email}</p>
         </div>
-        <Button onClick={() => setSheetOpen(true)}>
-          Generate Recommendations
-        </Button>
-      </div>
+      </AdminContentHeader>
 
+      <div className="px-4 pb-4 md:px-8 md:pb-8 space-y-6 mt-6 max-w-4xl">
       {!hasProfile ? (
         <Card>
           <CardContent className="py-12 text-center">
@@ -231,9 +235,21 @@ export function ClientDetailContent({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Recommendation History</h2>
-          <span className="text-sm text-muted-foreground">
-            {recommendations.length} recommendation{recommendations.length !== 1 ? "s" : ""}
-          </span>
+          <div className="flex items-center gap-2">
+            {hasIncomplete && recommendations.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Complete existing recommendations first
+              </p>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSheetOpen(true)}
+              disabled={hasIncomplete && recommendations.length > 0}
+            >
+              Generate Recommendations
+            </Button>
+          </div>
         </div>
 
         {recommendations.length === 0 ? (
@@ -245,7 +261,7 @@ export function ClientDetailContent({
             </CardContent>
           </Card>
         ) : (
-          <Card>
+          <Card className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -306,7 +322,7 @@ export function ClientDetailContent({
         open={!!viewingRec}
         onOpenChange={(open) => !open && setViewingRec(null)}
       >
-        <DialogContent className="w-[50vw] sm:max-w-none max-h-[85vh] overflow-y-auto">
+        <DialogContent className="w-full sm:max-w-2xl max-h-[85vh] overflow-y-auto">
           {viewingRec && (
             <>
               <DialogHeader>
@@ -347,7 +363,9 @@ export function ClientDetailContent({
         score={score}
         hasProfile={!!hasProfile}
         draft={draft}
+        hasPendingRecommendation={hasIncomplete && recommendations.length > 0}
       />
+      </div>
     </div>
   );
 }

@@ -30,7 +30,7 @@ import {
   sendRecommendation,
   deleteDraftRecommendation,
 } from "@/actions/recommendations";
-import { Sparkles, Save, Send, Loader2, Trash2 } from "lucide-react";
+import { Sparkles, Save, Send, Loader2, Trash2, Info } from "lucide-react";
 
 interface ActionItem {
   action: string;
@@ -54,6 +54,7 @@ interface Props {
   score?: number | null;
   hasProfile?: boolean;
   draft?: DraftRec | null;
+  hasPendingRecommendation?: boolean;
 }
 
 const EMPTY_ACTIONS: ActionItem[] = [
@@ -83,6 +84,7 @@ export function RecommendSheet({
   score: realScore,
   hasProfile: realHasProfile,
   draft,
+  hasPendingRecommendation,
 }: Props) {
   const { isDemoMode: clientDemoMode } = useDemoMode();
   const isDemoMode = serverDemoMode || clientDemoMode;
@@ -446,6 +448,15 @@ export function RecommendSheet({
                     ))}
                   </div>
 
+                  {hasPendingRecommendation && (
+                    <div className="flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2.5">
+                      <Info className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                      <p className="text-sm text-amber-700 dark:text-amber-400">
+                        This client has an active recommendation that hasn&apos;t been completed yet. You can save a draft, but sending is disabled until all previous recommendations are completed.
+                      </p>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between">
                     <div>
                       {savedId &&
@@ -517,7 +528,7 @@ export function RecommendSheet({
                       ) : (
                         <Button
                           onClick={handleSend}
-                          disabled={isSending || !savedId}
+                          disabled={isSending || !savedId || hasPendingRecommendation}
                         >
                           {isSending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />

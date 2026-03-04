@@ -15,6 +15,7 @@ interface RecommendationCardProps {
   createdAt: string | null;
   sentAt: string | null;
   acknowledgedAt: string | null;
+  startedAt?: string | null;
   completedAt: string | null;
   aiGenerated?: boolean | null;
   compact?: boolean;
@@ -28,7 +29,8 @@ const STATUS_CONFIG: Record<
   draft: { label: "Draft", variant: "outline", className: "border-muted-foreground/40" },
   sent: { label: "Sent", variant: "default", className: "bg-blue-500 hover:bg-blue-500" },
   acknowledged: { label: "Acknowledged", variant: "default", className: "bg-amber-500 hover:bg-amber-500" },
-  done: { label: "Completed", variant: "default", className: "bg-emerald-500 hover:bg-emerald-500" },
+  in_progress: { label: "In Progress", variant: "default", className: "bg-indigo-500 hover:bg-indigo-500" },
+  completed: { label: "Completed", variant: "default", className: "bg-emerald-500 hover:bg-emerald-500" },
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -53,6 +55,7 @@ export function RecommendationCard({
   createdAt,
   sentAt,
   acknowledgedAt,
+  startedAt,
   completedAt,
   aiGenerated,
   compact,
@@ -113,6 +116,7 @@ export function RecommendationCard({
           <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1 text-xs text-muted-foreground">
             {sentAt && <span>Sent {formatDate(sentAt)}</span>}
             {acknowledgedAt && <span>Acknowledged {formatDate(acknowledgedAt)}</span>}
+            {startedAt && <span>Started {formatDate(startedAt)}</span>}
             {completedAt && <span>Completed {formatDate(completedAt)}</span>}
           </div>
         </CardContent>

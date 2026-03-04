@@ -103,6 +103,7 @@ export async function saveRecommendation(
       .from("recommendations")
       .update({
         summary: recommendation.summary,
+        client_summary: recommendation.client_summary,
         actions: recommendation.actions as unknown as Json,
         ai_generated: true,
       })
@@ -119,6 +120,7 @@ export async function saveRecommendation(
         advisor_id: user.id,
         status: "draft",
         summary: recommendation.summary,
+        client_summary: recommendation.client_summary,
         actions: recommendation.actions as unknown as Json,
         ai_generated: true,
       })
@@ -137,7 +139,8 @@ export async function saveRecommendation(
 export async function updateRecommendation(
   id: string,
   summary: string,
-  actions: AIRecommendation["actions"]
+  actions: AIRecommendation["actions"],
+  clientSummary?: string
 ) {
   const supabase = await createClient();
   const {
@@ -150,6 +153,7 @@ export async function updateRecommendation(
     .from("recommendations")
     .update({
       summary,
+      client_summary: clientSummary ?? null,
       actions: actions as unknown as Json,
     })
     .eq("id", id)
@@ -204,6 +208,7 @@ export async function sendRecommendation(id: string) {
   if (error) return { error: error.message };
 
   revalidatePath(`/admin/client/${data.client_id}`);
+  revalidatePath("/recommendations");
   return { success: true };
 }
 
@@ -215,18 +220,47 @@ export async function acknowledgeRecommendation(id: string) {
 
   if (!user) return { error: "Not authenticated" };
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("recommendations")
     .update({
       status: "acknowledged",
       acknowledged_at: new Date().toISOString(),
     })
     .eq("id", id)
-    .eq("client_id", user.id);
+    .eq("client_id", user.id)
+    .select()
+    .single();
 
   if (error) return { error: error.message };
 
   revalidatePath("/recommendations");
+  revalidatePath(`/admin/client/${data.client_id}`);
+  return { success: true };
+}
+
+export async function startRecommendation(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { data, error } = await supabase
+    .from("recommendations")
+    .update({
+      status: "in_progress",
+      started_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("client_id", user.id)
+    .select()
+    .single();
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/recommendations");
+  revalidatePath(`/admin/client/${data.client_id}`);
   return { success: true };
 }
 
@@ -238,17 +272,20 @@ export async function completeRecommendation(id: string) {
 
   if (!user) return { error: "Not authenticated" };
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("recommendations")
     .update({
-      status: "done",
+      status: "completed",
       completed_at: new Date().toISOString(),
     })
     .eq("id", id)
-    .eq("client_id", user.id);
+    .eq("client_id", user.id)
+    .select()
+    .single();
 
   if (error) return { error: error.message };
 
   revalidatePath("/recommendations");
+  revalidatePath(`/admin/client/${data.client_id}`);
   return { success: true };
 }

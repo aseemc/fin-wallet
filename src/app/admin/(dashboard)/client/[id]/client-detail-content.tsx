@@ -328,6 +328,7 @@ export function ClientDetailContent({
                 createdAt={viewingRec.created_at}
                 sentAt={viewingRec.sent_at}
                 acknowledgedAt={viewingRec.acknowledged_at}
+                startedAt={viewingRec.started_at}
                 completedAt={viewingRec.completed_at}
                 aiGenerated={viewingRec.ai_generated}
                 hideBadge
@@ -380,7 +381,8 @@ const STATUS_CONFIG: Record<
   draft: { label: "Draft", variant: "outline", className: "border-muted-foreground/40" },
   sent: { label: "Sent", variant: "default", className: "bg-blue-500 hover:bg-blue-500" },
   acknowledged: { label: "Acknowledged", variant: "default", className: "bg-amber-500 hover:bg-amber-500" },
-  done: { label: "Completed", variant: "default", className: "bg-emerald-500 hover:bg-emerald-500" },
+  in_progress: { label: "In Progress", variant: "default", className: "bg-indigo-500 hover:bg-indigo-500" },
+  completed: { label: "Completed", variant: "default", className: "bg-emerald-500 hover:bg-emerald-500" },
 };
 
 function StatusBadge({ status }: { status: string }) {

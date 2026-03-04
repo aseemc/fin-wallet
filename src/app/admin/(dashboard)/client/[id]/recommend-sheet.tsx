@@ -41,6 +41,7 @@ interface ActionItem {
 interface DraftRec {
   id: string;
   summary: string;
+  client_summary?: string | null;
   actions: unknown;
 }
 
@@ -106,6 +107,7 @@ export function RecommendSheet({
   const router = useRouter();
   const [isGenerating, setIsGenerating] = useState(false);
   const [summary, setSummary] = useState(initialDraft?.summary ?? "");
+  const [clientSummary, setClientSummary] = useState(initialDraft?.client_summary ?? "");
   const [actions, setActions] = useState<ActionItem[]>(
     initialDraft ? parseDraftActions(initialDraft.actions) : EMPTY_ACTIONS
   );
@@ -140,6 +142,7 @@ export function RecommendSheet({
 
       if (demoRec) {
         setSummary(demoRec.summary);
+        setClientSummary(demoRec.client_summary ?? "");
         const demoActions = demoRec.actions as unknown as ActionItem[];
         setActions(
           demoActions.length >= 3 ? demoActions.slice(0, 3) : [
@@ -166,6 +169,7 @@ export function RecommendSheet({
 
     if (result.data) {
       setSummary(result.data.summary);
+      setClientSummary(result.data.client_summary);
       setActions(result.data.actions);
       setHasGenerated(true);
       toast.success("AI recommendation generated");
@@ -186,6 +190,7 @@ export function RecommendSheet({
     startSaveTransition(async () => {
       const result = await saveRecommendation(clientId, {
         summary,
+        client_summary: clientSummary,
         actions,
       });
 
@@ -243,6 +248,7 @@ export function RecommendSheet({
       }
 
       setSummary("");
+      setClientSummary("");
       setActions(EMPTY_ACTIONS);
       setHasGenerated(false);
       setSavedId(null);
@@ -327,6 +333,33 @@ export function RecommendSheet({
                       />
                       <p className="text-xs text-muted-foreground mt-1.5">
                         {summary.length}/280 characters
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-base">
+                          Client Message
+                        </CardTitle>
+                        <Badge variant="secondary" className="text-xs gap-1">
+                          <SparklesIcon />
+                          AI-generated · Editable
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Textarea
+                        value={clientSummary}
+                        onChange={(e) => setClientSummary(e.target.value)}
+                        placeholder="Encouraging message for the client..."
+                        rows={3}
+                        className="resize-none"
+                        disabled={isDemoMode}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1.5">
+                        {clientSummary.length}/280 characters — this is what the client will see
                       </p>
                     </CardContent>
                   </Card>

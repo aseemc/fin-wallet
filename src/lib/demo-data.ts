@@ -162,12 +162,50 @@ const SCORES_3 = makeScoreSnapshots(DEMO_CLIENT_3.id, [
 
 const RECS_1: Recommendation[] = [
   {
+    id: "demo-rec-000",
+    client_id: DEMO_CLIENT_1.id,
+    advisor_id: DEMO_ADVISOR.id,
+    status: "completed",
+    summary:
+      "Initial assessment: Your debt-to-income ratio needs attention. Start with quick wins to build momentum before tackling larger structural changes.",
+    client_summary:
+      "You're off to a great start! We've mapped out a few quick wins to build momentum — small steps that will make a real difference over the coming weeks.",
+    actions: [
+      {
+        action: "Set up a dedicated debt repayment account with $500/month auto-transfer",
+        priority: "high",
+        rationale:
+          "Automating payments prevents missed months and accelerates payoff timeline",
+      },
+      {
+        action: "Cancel unused streaming and subscription services (est. $80/month savings)",
+        priority: "medium",
+        rationale:
+          "Audit found 4 subscriptions under $25 that haven't been used in 60+ days",
+      },
+      {
+        action: "Request a credit limit increase on your oldest card (without hard pull)",
+        priority: "low",
+        rationale:
+          "Lowers utilization ratio which indirectly improves borrowing terms",
+      },
+    ],
+    ai_generated: true,
+    created_at: "2026-01-10T00:00:00Z",
+    sent_at: "2026-01-10T14:00:00Z",
+    acknowledged_at: "2026-01-11T09:00:00Z",
+    started_at: "2026-01-12T10:00:00Z",
+    completed_at: "2026-02-01T16:00:00Z",
+  },
+  {
     id: "demo-rec-001",
     client_id: DEMO_CLIENT_1.id,
     advisor_id: DEMO_ADVISOR.id,
-    status: "acknowledged",
+    status: "in_progress",
     summary:
       "Your savings rate is solid at 35%, but high debt relative to income is dragging your score. Prioritize accelerating debt payoff while maintaining your emergency fund contributions.",
+    client_summary:
+      "Great job saving 35% of your income! Let's channel some of that momentum toward paying down debt faster — you're closer to your goals than you think.",
     actions: [
       {
         action: "Allocate an extra $300/month toward debt principal",
@@ -192,6 +230,43 @@ const RECS_1: Recommendation[] = [
     created_at: "2026-02-15T00:00:00Z",
     sent_at: "2026-02-15T10:00:00Z",
     acknowledged_at: "2026-02-16T08:30:00Z",
+    started_at: "2026-02-17T11:00:00Z",
+    completed_at: null,
+  },
+  {
+    id: "demo-rec-0015",
+    client_id: DEMO_CLIENT_1.id,
+    advisor_id: DEMO_ADVISOR.id,
+    status: "acknowledged",
+    summary:
+      "Emergency fund is on track but expense-to-income ratio has crept up. Review recurring charges and consider a brief spending freeze to reset habits.",
+    client_summary:
+      "Your emergency fund is looking strong! A quick review of recurring expenses can free up even more room. A short reset will help you finish the year on top.",
+    actions: [
+      {
+        action: "Conduct a 7-day no-spend challenge for discretionary categories",
+        priority: "high",
+        rationale:
+          "Short resets help identify spending patterns and build mindful habits",
+      },
+      {
+        action: "Renegotiate insurance premiums (auto + renter's)",
+        priority: "medium",
+        rationale:
+          "Annual renegotiation or provider switch can save $50-100/month",
+      },
+      {
+        action: "Set a monthly dining-out budget of $200 using a dedicated card",
+        priority: "low",
+        rationale:
+          "Dining is the largest discretionary expense at ~$400/month currently",
+      },
+    ],
+    ai_generated: true,
+    created_at: "2026-02-25T00:00:00Z",
+    sent_at: "2026-02-25T09:00:00Z",
+    acknowledged_at: "2026-02-26T08:00:00Z",
+    started_at: null,
     completed_at: null,
   },
   {
@@ -201,6 +276,8 @@ const RECS_1: Recommendation[] = [
     status: "sent",
     summary:
       "Great progress this month! Score improved to 72. Focus on maintaining momentum with debt reduction and building toward your emergency fund target of $15K.",
+    client_summary:
+      "Amazing progress — your score jumped to 72! Keep up the great work on debt reduction and you'll hit your $15K emergency fund goal in no time.",
     actions: [
       {
         action: "Increase debt payments by $100 now that expenses are lower",
@@ -225,6 +302,7 @@ const RECS_1: Recommendation[] = [
     created_at: "2026-03-01T00:00:00Z",
     sent_at: "2026-03-01T09:00:00Z",
     acknowledged_at: null,
+    started_at: null,
     completed_at: null,
   },
 ];
@@ -237,6 +315,8 @@ const RECS_2: Recommendation[] = [
     status: "draft",
     summary:
       "High debt-to-income ratio and low savings are significant risks. Immediate focus should be on building a basic emergency buffer while aggressively tackling credit card debt.",
+    client_summary:
+      "We've put together a clear plan to tackle your debt and build a safety net. One step at a time — you've got this, and we're here to help every step of the way!",
     actions: [
       {
         action: "Consolidate credit card debt into a lower-rate personal loan",
@@ -261,6 +341,7 @@ const RECS_2: Recommendation[] = [
     created_at: "2026-03-02T00:00:00Z",
     sent_at: null,
     acknowledged_at: null,
+    started_at: null,
     completed_at: null,
   },
 ];

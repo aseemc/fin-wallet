@@ -9,6 +9,7 @@ const actionSchema = z.object({
 
 export const recommendationSchema = z.object({
   summary: z.string(),
+  client_summary: z.string(),
   actions: z.array(actionSchema).length(3),
 });
 
@@ -64,8 +65,8 @@ Score Breakdown:
 - Emergency Fund Coverage: ${input.breakdown.emergency_coverage}/25
 - Goal Progress: ${input.breakdown.goal_progress}/25
 
-Respond in JSON: { "summary": "2-3 sentence risk assessment", "actions": [{"action": "...", "priority": "high|medium|low", "rationale": "..."}] }
-Rules: exactly 3 actions, high priority first, specific dollar amounts, focus on weakest score areas, summary under 280 chars.`;
+Respond in JSON: { "summary": "2-3 sentence risk assessment for the advisor (clinical, data-driven)", "client_summary": "2-3 sentence encouraging message for the client (warm, motivational, actionable)", "actions": [{"action": "...", "priority": "high|medium|low", "rationale": "..."}] }
+Rules: exactly 3 actions, high priority first, specific dollar amounts, focus on weakest score areas, summary under 280 chars. client_summary should be warm and encouraging, avoid jargon, focus on progress and next steps, under 280 chars.`;
 
   const response = await client.chat.completions.create({
     model: "gpt-4o-mini",
